@@ -1,0 +1,144 @@
+[gd_scene load_steps=14 format=3 uid="uid://bermn5uw8f3ya"]
+
+[ext_resource type="Script" uid="uid://c475qgemcd8h3" path="res://objects/player.gd" id="1_ykyjo"]
+[ext_resource type="Texture2D" uid="uid://khofeflcio53" path="res://assets/sprites/ablien.png" id="2_ykyjo"]
+[ext_resource type="AudioStream" uid="uid://vhsah7q1hfqv" path="res://assets/sounds/dash.wav" id="3_uxov2"]
+[ext_resource type="AudioStream" uid="uid://dj2qmavbfpkh6" path="res://assets/sounds/ded.wav" id="4_f46kd"]
+[ext_resource type="Script" uid="uid://c1v6j2306a3qi" path="res://objects/PlayerHUD.gd" id="4_nmc1l"]
+[ext_resource type="FontFile" uid="uid://b3171xx3aue4" path="res://assets/OpenDyslexic-Regular.otf" id="6_3rerk"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f46kd"]
+atlas = ExtResource("2_ykyjo")
+region = Rect2(0, 18, 18, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_uxov2"]
+atlas = ExtResource("2_ykyjo")
+region = Rect2(0, 0, 18, 18)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nmc1l"]
+atlas = ExtResource("2_ykyjo")
+region = Rect2(18, 0, 18, 18)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_f46kd"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f46kd")
+}],
+"loop": true,
+"name": &"dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_uxov2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nmc1l")
+}],
+"loop": true,
+"name": &"default",
+"speed": 6.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_ykyjo"]
+radius = 4.0
+height = 14.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_uxov2"]
+radius = 5.0
+height = 18.0
+
+[sub_resource type="LabelSettings" id="LabelSettings_f46kd"]
+font = ExtResource("6_3rerk")
+font_size = 32
+
+[node name="Player" type="CharacterBody2D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_ykyjo")
+
+[node name="Sprite" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_f46kd")
+animation = &"dead"
+autoplay = "default"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, 1)
+shape = SubResource("CapsuleShape2D_ykyjo")
+
+[node name="Dash_Sound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("3_uxov2")
+
+[node name="Ded_Sound" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("4_f46kd")
+
+[node name="Hitbox" type="Area2D" parent="."]
+collision_layer = 2
+collision_mask = 4
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hitbox"]
+shape = SubResource("CapsuleShape2D_uxov2")
+debug_color = Color(0.7, 0, 0, 0.419608)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("4_nmc1l")
+
+[node name="DeathPanel" type="Control" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="CanvasLayer/Control/DeathPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0, 0, 0, 0.25)
+
+[node name="Label" type="Label" parent="CanvasLayer/Control/DeathPanel"]
+layout_mode = 1
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -80.0
+offset_top = 40.0
+offset_right = 80.0
+offset_bottom = 85.0
+grow_horizontal = 2
+text = "YOU DIED"
+label_settings = SubResource("LabelSettings_f46kd")
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RestartButton" type="Button" parent="CanvasLayer/Control/DeathPanel"]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -40.0
+offset_top = -68.0
+offset_right = 40.0
+offset_bottom = -37.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_fonts/font = ExtResource("6_3rerk")
+text = "Restart"
+
+[connection signal="area_entered" from="Hitbox" to="." method="_on_hitbox_area_entered"]
+[connection signal="pressed" from="CanvasLayer/Control/DeathPanel/RestartButton" to="CanvasLayer/Control" method="_on_restart_button_pressed"]

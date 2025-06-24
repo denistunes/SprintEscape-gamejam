@@ -1,0 +1,41 @@
+[gd_scene load_steps=6 format=3 uid="uid://ciy36ljh3bb53"]
+
+[ext_resource type="Texture2D" uid="uid://bdu2aftnsvyku" path="res://assets/sprites/camera.png" id="1_exrbp"]
+[ext_resource type="Script" uid="uid://pgpxyx4klv0j" path="res://objects/camera.gd" id="1_n8nd1"]
+[ext_resource type="Texture2D" uid="uid://di7havarmjruw" path="res://assets/sprites/fade.png" id="3_d7esd"]
+[ext_resource type="AudioStream" uid="uid://c6ltfdopvu002" path="res://assets/sounds/shoot.wav" id="4_q62vh"]
+
+[sub_resource type="AudioStreamRandomizer" id="AudioStreamRandomizer_q62vh"]
+random_pitch = 1.2
+streams_count = 1
+stream_0/stream = ExtResource("4_q62vh")
+
+[node name="Camera" type="Node2D"]
+script = ExtResource("1_n8nd1")
+max_notice = 0.315
+
+[node name="Polygon2D" type="Polygon2D" parent="."]
+position = Vector2(8, 0)
+color = Color(1, 1, 1, 0.338)
+texture = ExtResource("3_d7esd")
+polygon = PackedVector2Array(76, -36, 0, -8, 0, 8, 76, 36, 92, 28, 100, 12, 100, -12, 92, -28)
+uv = PackedVector2Array(80, -40, 0, -8, 0, 8, 80, 40, 96, 32, 104, 16, 104, -16, 96, -32)
+
+[node name="Area2D" type="Area2D" parent="."]
+collision_layer = 4
+collision_mask = 2
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="Area2D"]
+polygon = PackedVector2Array(84, -36, 100, -28, 108, -12, 108, 12, 100, 28, 84, 36, 4, 8, 4, -8)
+
+[node name="Sprite" type="Sprite2D" parent="."]
+texture = ExtResource("1_exrbp")
+
+[node name="ShootPos" type="Marker2D" parent="."]
+position = Vector2(20, 0)
+
+[node name="ShootSound" type="AudioStreamPlayer" parent="."]
+stream = SubResource("AudioStreamRandomizer_q62vh")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
+[connection signal="body_exited" from="Area2D" to="." method="_on_area_2d_body_exited"]
